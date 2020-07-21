@@ -80,6 +80,38 @@ Optim
 """
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
+"""
+Train
+"""
+
+epochs = 200
+train_sample_num = torch.tensor(x_train.shape[0])
+test_sample_num = torch.tensor(x_test.shape[0])
+valid_sample_num = torch.tensor(x_valid.shape[0])
+
+for epoch in range(epochs):
+
+    optimizer.zero_grad()
+    yp = model(x_train)
+    loss_1 = loss(yp, y_train)
+    train_success = torch.sum(torch.max(yp, 1)[1] == y_train)
+
+    loss_1.backward()
+    optimizer.step()
+
+
+    train_acc = train_success.item()/float(train_sample_num)
+
+    yp_valid = model(x_valid)
+    valid_success = torch.sum(torch.max(yp_valid, 1)[1] == y_valid)
+    valid_acc = valid_success.item() /float(valid_sample_num)
+
+
+    print('epoch_num= ', epoch, 'Loss= ', loss_1.item(), 'train_acc= ', train_acc, 'valida_acc= ', valid_acc)
+
+
+
+
 
 
 
