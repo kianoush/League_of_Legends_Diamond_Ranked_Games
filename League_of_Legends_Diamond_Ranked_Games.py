@@ -30,9 +30,57 @@ https://www.kaggle.com/bobbyscience/league-of-legends-diamond-ranked-games-10-mi
 
 import os
 import pandas as pd
+from sklearn.model_selection import train_test_split
+import torch
+import torch.nn as nn
+
 
 
 print(os.listdir())
+raw_data = pd.read_csv('high_diamond_ranked_10min.csv')
+raw_data.info()
+
+df = raw_data.iloc[:,2:40]
+lable = raw_data.iloc[:,1]
+
+"""
+Data split
+"""
+x_train, x_test, y_train, y_test = train_test_split(df, lable, test_size=0.2, shuffle=True, random_state=12)
+x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, test_size=0.1, shuffle=True, random_state=12)
+
+x_train=torch.tensor(x_train.values).float()
+x_test=torch.tensor(x_test.values).float()
+x_valid=torch.tensor(x_valid.values).float()
+
+y_train = torch.tensor(y_train.values)
+y_test = torch.tensor(y_test.values)
+y_valid = torch.tensor(y_valid.values)
+
+"""
+Model
+"""
+feature_num = x_train.shape[1]
+class_num = 2
+hidden_layer = 10
+
+model = torch.nn.Sequential(nn.Linear(feature_num, hidden_layer),
+                            nn.ReLU(),
+                            nn.Linear(hidden_layer, class_num),
+                            nn.Sigmoid())
+"""
+Loss
+"""
+
+loss = torch.nn.CrossEntropyLoss()
+
+
+"""
+Optim
+"""
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+
 
 
 print('END!')
