@@ -36,12 +36,12 @@ import torch.nn as nn
 
 
 
-print(os.listdir())
+#print(os.listdir())
 raw_data = pd.read_csv('high_diamond_ranked_10min.csv')
-raw_data.info()
+#raw_data.info()
 
-df = raw_data.iloc[:,2:40]
-lable = raw_data.iloc[:,1]
+df = raw_data.iloc[:, 2:40]
+lable = raw_data.iloc[:, 1]
 
 """
 Data split
@@ -49,9 +49,9 @@ Data split
 x_train, x_test, y_train, y_test = train_test_split(df, lable, test_size=0.2, shuffle=True, random_state=12)
 x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, test_size=0.1, shuffle=True, random_state=12)
 
-x_train=torch.tensor(x_train.values).float()
-x_test=torch.tensor(x_test.values).float()
-x_valid=torch.tensor(x_valid.values).float()
+x_train = torch.tensor(x_train.values).float()
+x_test = torch.tensor(x_test.values).float()
+x_valid = torch.tensor(x_valid.values).float()
 
 y_train = torch.tensor(y_train.values)
 y_test = torch.tensor(y_test.values)
@@ -62,11 +62,20 @@ Model
 """
 feature_num = x_train.shape[1]
 class_num = 2
-hidden_layer = 10
+hidden_layer = 30
+hidden_layer2 = 20
+hidden_layer3 = 10
+hidden_layer4 = 10
 
 model = torch.nn.Sequential(nn.Linear(feature_num, hidden_layer),
                             nn.ReLU(),
-                            nn.Linear(hidden_layer, class_num),
+                            nn.Linear(hidden_layer, hidden_layer2),
+                            nn.ReLU(),
+                            nn.Linear(hidden_layer2, hidden_layer3),
+                            nn.ReLU(),
+                            nn.Linear(hidden_layer3, hidden_layer4),
+                            nn.ReLU(),
+                            nn.Linear(hidden_layer4, class_num),
                             nn.Sigmoid())
 """
 Loss
@@ -85,6 +94,7 @@ Train
 """
 
 epochs = 200
+
 train_sample_num = torch.tensor(x_train.shape[0])
 test_sample_num = torch.tensor(x_test.shape[0])
 valid_sample_num = torch.tensor(x_valid.shape[0])
@@ -94,20 +104,20 @@ for epoch in range(epochs):
     optimizer.zero_grad()
     yp = model(x_train)
     loss_1 = loss(yp, y_train)
-    train_success = torch.sum(torch.max(yp, 1)[1] == y_train)
+    num_corrects = torch.sum(torch.max(yp, 1)[1] == y_train)
 
     loss_1.backward()
     optimizer.step()
 
 
-    train_acc = train_success.item()/float(train_sample_num)
+    train_acc = num_corrects.float()/ float(train_sample_num)
 
     yp_valid = model(x_valid)
-    valid_success = torch.sum(torch.max(yp_valid, 1)[1] == y_valid)
-    valid_acc = valid_success.item() /float(valid_sample_num)
+    valid_corrects = torch.sum(torch.max(yp_valid, 1)[1] == y_valid)
+    valid_acc = valid_corrects.float() / float(valid_sample_num)
 
 
-    print('epoch_num= ', epoch, 'Loss= ', loss_1.item(), 'train_acc= ', train_acc, 'valida_acc= ', valid_acc)
+    print('epoch_num= ', epoch, 'Loss= ', loss_1.item(), 'train_acc= ', train_acc.item(), 'valida_acc= ', valid_acc.item())
 
 
 
