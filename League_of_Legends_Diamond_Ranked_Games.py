@@ -43,6 +43,7 @@ raw_data = pd.read_csv('high_diamond_ranked_10min.csv')
 df = raw_data.iloc[:, 2:40]
 lable = raw_data.iloc[:, 1]
 
+df_2 = pd.DataFrame(raw_data['blueWardsDestroyed'], raw_data['blueKills'], raw_data['blueDeaths'])
 """
 Data split
 """
