@@ -39,15 +39,22 @@ import torch.nn as nn
 #print(os.listdir())
 raw_data = pd.read_csv('high_diamond_ranked_10min.csv')
 #raw_data.info()
-
+raw_data.sort_values('blueTotalGold', axis = 0, ascending = True,
+                 inplace = True, na_position ='first')
 df = raw_data.iloc[:, 2:40]
 lable = raw_data.iloc[:, 1]
 
-df_2 = pd.DataFrame(raw_data['blueWardsDestroyed'], raw_data['blueKills'], raw_data['blueDeaths'])
+
+list_of_important_feature = ['blueWardsDestroyed','blueKills', 'blueDeaths', 'blueAssists', 'blueEliteMonsters',
+                             'blueDragons','blueTowersDestroyed','blueAvgLevel', 'blueTotalMinionsKilled', 'redDeaths']
+df_2 = pd.DataFrame()
+for titel in list_of_important_feature:
+    df_2[titel] = raw_data[titel]
+
 """
 Data split
 """
-x_train, x_test, y_train, y_test = train_test_split(df, lable, test_size=0.2, shuffle=True, random_state=12)
+x_train, x_test, y_train, y_test = train_test_split(df_2, lable, test_size=0.2, shuffle=True, random_state=12)
 x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, test_size=0.1, shuffle=True, random_state=12)
 
 x_train = torch.tensor(x_train.values).float()
