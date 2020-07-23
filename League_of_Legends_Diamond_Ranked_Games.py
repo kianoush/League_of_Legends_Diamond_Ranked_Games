@@ -28,12 +28,14 @@ https://www.kaggle.com/bobbyscience/league-of-legends-diamond-ranked-games-10-mi
 
 """
 
+import numpy as np
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import torch
 import torch.nn as nn
-
+from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
 
 
 #print(os.listdir())
@@ -54,8 +56,22 @@ for titel in list_of_important_feature:
 """
 Data split
 """
-x_train, x_test, y_train, y_test = train_test_split(df_2, lable, test_size=0.2, shuffle=True, random_state=12)
+x_train, x_test, y_train, y_test = train_test_split(df, lable, test_size=0.2, shuffle=True, random_state=12)
 x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, test_size=0.1, shuffle=True, random_state=12)
+
+# clf = LogisticRegression(random_state=0).fit(x_train, y_train)
+# clf.predict()
+clf = MLPClassifier()
+
+clf.fit(x_train, y_train)
+y_pred = clf.predict(x_test)
+
+acc = np.mean(y_test == y_pred)
+
+print("accuracy = %.2f" % acc)
+
+#clf.score(X, y)
+
 
 x_train = torch.tensor(x_train.values).float()
 x_test = torch.tensor(x_test.values).float()
@@ -70,20 +86,12 @@ Model
 """
 feature_num = x_train.shape[1]
 class_num = 2
-hidden_layer = 30
-hidden_layer2 = 20
-hidden_layer3 = 10
-hidden_layer4 = 10
+hidden_layer = 10
+
 
 model = torch.nn.Sequential(nn.Linear(feature_num, hidden_layer),
                             nn.ReLU(),
-                            nn.Linear(hidden_layer, hidden_layer2),
-                            nn.ReLU(),
-                            nn.Linear(hidden_layer2, hidden_layer3),
-                            nn.ReLU(),
-                            nn.Linear(hidden_layer3, hidden_layer4),
-                            nn.ReLU(),
-                            nn.Linear(hidden_layer4, class_num),
+                            nn.Linear(hidden_layer, class_num),
                             nn.Sigmoid())
 """
 Loss
