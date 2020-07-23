@@ -46,6 +46,9 @@ raw_data.sort_values('blueTotalGold', axis = 0, ascending = True,
 df = raw_data.iloc[:, 2:40]
 lable = raw_data.iloc[:, 1]
 
+"""
+List of important feature
+"""
 
 list_of_important_feature = ['blueWardsDestroyed','blueKills', 'blueDeaths', 'blueAssists', 'blueEliteMonsters',
                              'blueDragons','blueTowersDestroyed','blueAvgLevel', 'blueTotalMinionsKilled', 'redDeaths']
