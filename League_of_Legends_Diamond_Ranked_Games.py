@@ -27,7 +27,7 @@ Level: Champion level. Start at 1. Max is 18.
 https://www.kaggle.com/bobbyscience/league-of-legends-diamond-ranked-games-10-min
 
 """
-
+import time, datetime
 import numpy as np
 import os
 import pandas as pd
@@ -38,7 +38,16 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
 import matplotlib.pyplot as plt
 from sklearn.linear_model import Lasso
-
+#import catboost
+from sklearn.model_selection import train_test_split
+from sklearn import model_selection, tree, preprocessing, metrics, linear_model
+from sklearn.svm import LinearSVC
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import LinearRegression, LogisticRegression, SGDClassifier
+from sklearn.tree import DecisionTreeClassifier
+#from catboost import CatBoostClassifier, Pool, cv
 
 
 #print(os.listdir())
@@ -85,12 +94,42 @@ clf = MLPClassifier()
 # plt.ylabel('coefficients')
 # plt.show()
 
-clf.fit(x_train, y_train)
-y_pred = clf.predict(x_test)
+# clf.fit(x_train, y_train)
+# y_pred = clf.predict(x_test)
+#
+# acc = np.mean(y_test == y_pred)
+#
+# print("accuracy = %.2f" % acc)
 
-acc = np.mean(y_test == y_pred)
 
-print("accuracy = %.2f" % acc)
+
+def fit_ml_algo(algo, X_train, y_train, cv):
+    # One Pass
+    model = algo.fit(X_train, y_train)
+    acc = round(model.score(X_train, y_train) * 100, 2)
+
+    # Cross Validation
+    train_pred = model_selection.cross_val_predict(algo,
+                                                   X_train,
+                                                   y_train,
+                                                   cv=cv,
+                                                   n_jobs=-1)
+    # Cross-validation accuracy metric
+    acc_cv = round(metrics.accuracy_score(y_train, train_pred) * 100, 2)
+
+    return train_pred, acc, acc_cv
+
+# Logistic Regression
+start_time = time.time()
+train_pred_log, acc_log, acc_cv_log = fit_ml_algo(LogisticRegression(),
+                                                               x_train,
+                                                               y_train,
+                                                                    10)
+log_time = (time.time() - start_time)
+print("Accuracy: %s" % acc_log)
+print("Accuracy CV 10-Fold: %s" % acc_cv_log)
+print("Running Time: %s" % datetime.timedelta(seconds=log_time))
+
 
 #clf.score(X, y)
 
@@ -137,25 +176,25 @@ train_sample_num = torch.tensor(x_train.shape[0])
 test_sample_num = torch.tensor(x_test.shape[0])
 valid_sample_num = torch.tensor(x_valid.shape[0])
 
-for epoch in range(epochs):
-
-    optimizer.zero_grad()
-    yp = model(x_train)
-    loss_1 = loss(yp, y_train)
-    num_corrects = torch.sum(torch.max(yp, 1)[1] == y_train)
-
-    loss_1.backward()
-    optimizer.step()
-
-
-    train_acc = num_corrects.float()/ float(train_sample_num)
-
-    yp_valid = model(x_valid)
-    valid_corrects = torch.sum(torch.max(yp_valid, 1)[1] == y_valid)
-    valid_acc = valid_corrects.float() / float(valid_sample_num)
-
-
-    print('epoch_num= ', epoch, 'Loss= ', loss_1.item(), 'train_acc= ', train_acc.item(), 'valida_acc= ', valid_acc.item())
+# for epoch in range(epochs):
+#
+#     optimizer.zero_grad()
+#     yp = model(x_train)
+#     loss_1 = loss(yp, y_train)
+#     num_corrects = torch.sum(torch.max(yp, 1)[1] == y_train)
+#
+#     loss_1.backward()
+#     optimizer.step()
+#
+#
+#     train_acc = num_corrects.float()/ float(train_sample_num)
+#
+#     yp_valid = model(x_valid)
+#     valid_corrects = torch.sum(torch.max(yp_valid, 1)[1] == y_valid)
+#     valid_acc = valid_corrects.float() / float(valid_sample_num)
+#
+#
+#     print('epoch_num= ', epoch, 'Loss= ', loss_1.item(), 'train_acc= ', train_acc.item(), 'valida_acc= ', valid_acc.item())
 
 
 
