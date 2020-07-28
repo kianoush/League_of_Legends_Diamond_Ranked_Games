@@ -36,6 +36,9 @@ import torch
 import torch.nn as nn
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
+import matplotlib.pyplot as plt
+from sklearn.linear_model import Lasso
+
 
 
 #print(os.listdir())
@@ -65,6 +68,14 @@ x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, test_siz
 # clf = LogisticRegression(random_state=0).fit(x_train, y_train)
 # clf.predict()
 clf = MLPClassifier()
+
+model = Lasso()
+
+model.fit(x_train, y_train)
+
+c = model.coef_
+
+plt.plot(range(len(x_train.columns)), c)
 
 clf.fit(x_train, y_train)
 y_pred = clf.predict(x_test)
@@ -112,34 +123,34 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 Train
 """
 
-epochs = 200
-
-train_sample_num = torch.tensor(x_train.shape[0])
-test_sample_num = torch.tensor(x_test.shape[0])
-valid_sample_num = torch.tensor(x_valid.shape[0])
-
-for epoch in range(epochs):
-
-    optimizer.zero_grad()
-    yp = model(x_train)
-    loss_1 = loss(yp, y_train)
-    num_corrects = torch.sum(torch.max(yp, 1)[1] == y_train)
-
-    loss_1.backward()
-    optimizer.step()
-
-
-    train_acc = num_corrects.float()/ float(train_sample_num)
-
-    yp_valid = model(x_valid)
-    valid_corrects = torch.sum(torch.max(yp_valid, 1)[1] == y_valid)
-    valid_acc = valid_corrects.float() / float(valid_sample_num)
-
-
-    print('epoch_num= ', epoch, 'Loss= ', loss_1.item(), 'train_acc= ', train_acc.item(), 'valida_acc= ', valid_acc.item())
-
-
-
+# epochs = 200
+#
+# train_sample_num = torch.tensor(x_train.shape[0])
+# test_sample_num = torch.tensor(x_test.shape[0])
+# valid_sample_num = torch.tensor(x_valid.shape[0])
+#
+# for epoch in range(epochs):
+#
+#     optimizer.zero_grad()
+#     yp = model(x_train)
+#     loss_1 = loss(yp, y_train)
+#     num_corrects = torch.sum(torch.max(yp, 1)[1] == y_train)
+#
+#     loss_1.backward()
+#     optimizer.step()
+#
+#
+#     train_acc = num_corrects.float()/ float(train_sample_num)
+#
+#     yp_valid = model(x_valid)
+#     valid_corrects = torch.sum(torch.max(yp_valid, 1)[1] == y_valid)
+#     valid_acc = valid_corrects.float() / float(valid_sample_num)
+#
+#
+#     print('epoch_num= ', epoch, 'Loss= ', loss_1.item(), 'train_acc= ', train_acc.item(), 'valida_acc= ', valid_acc.item())
+#
+#
+#
 
 
 
