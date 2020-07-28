@@ -59,23 +59,31 @@ df_2 = pd.DataFrame()
 for titel in list_of_important_feature:
     df_2[titel] = raw_data[titel]
 
+
+list_of_important_feature01 = ['blueTotalExperience','blueGoldDiff', 'redTotalGold', 'redGoldDiff', 'redExperienceDiff']
+df_3 = pd.DataFrame()
+for titel in list_of_important_feature01:
+    df_3[titel] = raw_data[titel]
 """
 Data split
 """
-x_train, x_test, y_train, y_test = train_test_split(df, lable, test_size=0.2, shuffle=True, random_state=12)
+x_train, x_test, y_train, y_test = train_test_split(df_3, lable, test_size=0.2, shuffle=True, random_state=12)
 x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, test_size=0.1, shuffle=True, random_state=12)
 
 # clf = LogisticRegression(random_state=0).fit(x_train, y_train)
 # clf.predict()
 clf = MLPClassifier()
 
-model = Lasso()
-
-model.fit(x_train, y_train)
-
-c = model.coef_
-
-plt.plot(range(len(x_train.columns)), c)
+# model = Lasso()
+#
+# model.fit(x_train, y_train)
+#
+# c = model.coef_
+# print(c)
+# plt.plot(range(len(x_train.columns)), c)
+# plt.xticks(range(len(x_train.columns)), x_train.columns)
+# plt.ylabel('coefficients')
+# plt.show()
 
 clf.fit(x_train, y_train)
 y_pred = clf.predict(x_test)
@@ -123,34 +131,34 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 Train
 """
 
-# epochs = 200
-#
-# train_sample_num = torch.tensor(x_train.shape[0])
-# test_sample_num = torch.tensor(x_test.shape[0])
-# valid_sample_num = torch.tensor(x_valid.shape[0])
-#
-# for epoch in range(epochs):
-#
-#     optimizer.zero_grad()
-#     yp = model(x_train)
-#     loss_1 = loss(yp, y_train)
-#     num_corrects = torch.sum(torch.max(yp, 1)[1] == y_train)
-#
-#     loss_1.backward()
-#     optimizer.step()
-#
-#
-#     train_acc = num_corrects.float()/ float(train_sample_num)
-#
-#     yp_valid = model(x_valid)
-#     valid_corrects = torch.sum(torch.max(yp_valid, 1)[1] == y_valid)
-#     valid_acc = valid_corrects.float() / float(valid_sample_num)
-#
-#
-#     print('epoch_num= ', epoch, 'Loss= ', loss_1.item(), 'train_acc= ', train_acc.item(), 'valida_acc= ', valid_acc.item())
-#
-#
-#
+epochs = 200
+
+train_sample_num = torch.tensor(x_train.shape[0])
+test_sample_num = torch.tensor(x_test.shape[0])
+valid_sample_num = torch.tensor(x_valid.shape[0])
+
+for epoch in range(epochs):
+
+    optimizer.zero_grad()
+    yp = model(x_train)
+    loss_1 = loss(yp, y_train)
+    num_corrects = torch.sum(torch.max(yp, 1)[1] == y_train)
+
+    loss_1.backward()
+    optimizer.step()
+
+
+    train_acc = num_corrects.float()/ float(train_sample_num)
+
+    yp_valid = model(x_valid)
+    valid_corrects = torch.sum(torch.max(yp_valid, 1)[1] == y_valid)
+    valid_acc = valid_corrects.float() / float(valid_sample_num)
+
+
+    print('epoch_num= ', epoch, 'Loss= ', loss_1.item(), 'train_acc= ', train_acc.item(), 'valida_acc= ', valid_acc.item())
+
+
+
 
 
 
