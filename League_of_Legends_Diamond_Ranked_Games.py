@@ -41,7 +41,7 @@ from sklearn.linear_model import Lasso
 import catboost
 from sklearn.model_selection import train_test_split
 from sklearn import model_selection, tree, preprocessing, metrics, linear_model
-from sklearn.svm import LinearSVC
+from sklearn.svm import SVC, LinearSVC, NuSVC
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -80,6 +80,9 @@ x_train, x_test, y_train, y_test = train_test_split(df, lable, test_size=0.2, sh
 x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, test_size=0.1, shuffle=True, random_state=12)
 
 
+all_acc_and_algo_name = {}
+
+
 def fit_ml_algo(algo, X_train, y_train, cv):
     # One Pass
     model = algo.fit(X_train, y_train)
@@ -93,7 +96,7 @@ def fit_ml_algo(algo, X_train, y_train, cv):
                                                    n_jobs=-1)
     # Cross-validation accuracy metric
     acc_cv = round(metrics.accuracy_score(y_train, train_pred) * 100, 2)
-
+    all_acc_and_algo_name[algo] = acc
     return train_pred, acc, acc_cv
 
 # Logistic Regression
@@ -114,7 +117,7 @@ start_time = time.time()
 train_pred_knn, acc_knn, acc_cv_knn = fit_ml_algo(KNeighborsClassifier(n_neighbors=3),
                                                   x_train,
                                                   y_train,
-                                                  10)
+                                                 10)
 knn_time = (time.time() - start_time)
 print("KNN Accuracy: %s" % acc_knn)
 print("Accuracy CV 10-Fold: %s" % acc_cv_knn)
@@ -123,7 +126,20 @@ print()
 
 # Linear SVC
 start_time = time.time()
-train_pred_svc, acc_linear_svc, acc_cv_linear_svc = fit_ml_algo(LinearSVC(),
+train_pred_lsvc, acc_linear_svc, acc_cv_linear_svc = fit_ml_algo(LinearSVC(),
+                                                                x_train,
+                                                                y_train,
+                                                                10)
+linear_svc_time = (time.time() - start_time)
+print("Linear SVC Accuracy: %s" % acc_linear_svc)
+print("Accuracy CV 10-Fold: %s" % acc_cv_linear_svc)
+print("Running Time: %s" % datetime.timedelta(seconds=linear_svc_time))
+print()
+
+
+# SVC
+start_time = time.time()
+train_pred_svc, acc_linear_svc, acc_cv_linear_svc = fit_ml_algo(SVC(gamma='scale'),
                                                                 x_train,
                                                                 y_train,
                                                                 10)
@@ -135,8 +151,17 @@ print()
 
 
 
-
-
+# NuSVC
+start_time = time.time()
+train_pred_Nusvc, acc_linear_svc, acc_cv_linear_svc = fit_ml_algo(NuSVC(gamma='scale'),
+                                                                x_train,
+                                                                y_train,
+                                                                10)
+linear_svc_time = (time.time() - start_time)
+print("NUSVC Accuracy: %s" % acc_linear_svc)
+print("Accuracy CV 10-Fold: %s" % acc_cv_linear_svc)
+print("Running Time: %s" % datetime.timedelta(seconds=linear_svc_time))
+print()
 
 
 """
@@ -208,6 +233,6 @@ valid_sample_num = torch.tensor(x_valid.shape[0])
 
 
 
-
+print(all_acc_and_algo_name)
 
 print('END!')
