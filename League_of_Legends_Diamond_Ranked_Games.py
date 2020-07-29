@@ -62,17 +62,17 @@ lable = raw_data.iloc[:, 1]
 List of important feature
 """
 
-# list_of_important_feature = ['blueWardsDestroyed','blueKills', 'blueDeaths', 'blueAssists', 'blueEliteMonsters',
-#                              'blueDragons','blueTowersDestroyed','blueAvgLevel', 'blueTotalMinionsKilled', 'redDeaths']
-# df_2 = pd.DataFrame()
-# for titel in list_of_important_feature:
-#     df_2[titel] = raw_data[titel]
-#
-#
-# list_of_important_feature01 = ['blueTotalExperience','blueGoldDiff', 'redTotalGold', 'redGoldDiff', 'redExperienceDiff']
-# df_3 = pd.DataFrame()
-# for titel in list_of_important_feature01:
-#     df_3[titel] = raw_data[titel]
+list_of_important_feature = ['blueWardsDestroyed','blueKills', 'blueDeaths', 'blueAssists', 'blueEliteMonsters',
+                             'blueDragons','blueTowersDestroyed','blueAvgLevel', 'blueTotalMinionsKilled', 'redDeaths']
+df_2 = pd.DataFrame()
+for titel in list_of_important_feature:
+    df_2[titel] = raw_data[titel]
+
+
+list_of_important_feature01 = ['blueTotalExperience','blueGoldDiff', 'redTotalGold', 'redGoldDiff', 'redExperienceDiff']
+df_3 = pd.DataFrame()
+for titel in list_of_important_feature01:
+    df_3[titel] = raw_data[titel]
 """
 Data split
 """
@@ -103,14 +103,45 @@ train_pred_log, acc_log, acc_cv_log = fit_ml_algo(LogisticRegression(),
                                                                y_train,
                                                                     10)
 log_time = (time.time() - start_time)
-print("Accuracy: %s" % acc_log)
+print("Logistic Regression Accuracy: %s" % acc_log)
 print("Accuracy CV 10-Fold: %s" % acc_cv_log)
 print("Running Time: %s" % datetime.timedelta(seconds=log_time))
+print()
 
 
-#clf.score(X, y)
+# k-Nearest Neighbours
+start_time = time.time()
+train_pred_knn, acc_knn, acc_cv_knn = fit_ml_algo(KNeighborsClassifier(n_neighbors=3),
+                                                  x_train,
+                                                  y_train,
+                                                  10)
+knn_time = (time.time() - start_time)
+print("KNN Accuracy: %s" % acc_knn)
+print("Accuracy CV 10-Fold: %s" % acc_cv_knn)
+print("Running Time: %s" % datetime.timedelta(seconds=knn_time))
+print()
+
+# Linear SVC
+start_time = time.time()
+train_pred_svc, acc_linear_svc, acc_cv_linear_svc = fit_ml_algo(LinearSVC(),
+                                                                x_train,
+                                                                y_train,
+                                                                10)
+linear_svc_time = (time.time() - start_time)
+print("SVC Accuracy: %s" % acc_linear_svc)
+print("Accuracy CV 10-Fold: %s" % acc_cv_linear_svc)
+print("Running Time: %s" % datetime.timedelta(seconds=linear_svc_time))
+print()
 
 
+
+
+
+
+
+"""
+MLP classification
+"""
 x_train = torch.tensor(x_train.values).float()
 x_test = torch.tensor(x_test.values).float()
 x_valid = torch.tensor(x_valid.values).float()
