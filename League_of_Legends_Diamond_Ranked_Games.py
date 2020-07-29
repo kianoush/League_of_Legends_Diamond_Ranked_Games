@@ -77,7 +77,7 @@ for titel in list_of_important_feature01:
 """
 Data split
 """
-x_train, x_test, y_train, y_test = train_test_split(df_3, lable, test_size=0.2, shuffle=True, random_state=12)
+x_train, x_test, y_train, y_test = train_test_split(df, lable, test_size=0.2, shuffle=True, random_state=12)
 x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, test_size=0.1, shuffle=True, random_state=12)
 
 
@@ -225,7 +225,7 @@ train_pred_dt, acc_dt, acc_cv_dt = fit_ml_algo(DecisionTreeClassifier(),
                                                                 y_train,
                                                                 10)
 dt_time = (time.time() - start_time)
-print("Accuracy: %s" % acc_dt)
+print("Decision Tree Accuracy: %s" % acc_dt)
 print("Accuracy CV 10-Fold: %s" % acc_cv_dt)
 print("Running Time: %s" % datetime.timedelta(seconds=dt_time))
 print()
@@ -238,10 +238,50 @@ train_pred_gbt, acc_gbt, acc_cv_gbt = fit_ml_algo(GradientBoostingClassifier(),
                                                                        y_train,
                                                                        10)
 gbt_time = (time.time() - start_time)
-print("Accuracy: %s" % acc_gbt)
+print("gbt Accuracy: %s" % acc_gbt)
 print("Accuracy CV 10-Fold: %s" % acc_cv_gbt)
 print("Running Time: %s" % datetime.timedelta(seconds=gbt_time))
 print()
+
+
+
+# Define the categorical features for the CatBoost model
+cat_features = np.where(x_train.dtypes != np.float)[0]
+# Use the CatBoost Pool() function to pool together the training data and categorical feature labels
+train_pool = Pool(x_train,
+                  y_train,
+                  cat_features)
+
+# CatBoost model definition
+catboost_model = CatBoostClassifier(iterations=200,
+                                    custom_loss=['Accuracy'],
+                                    loss_function='Logloss')
+
+
+# Fit CatBoost model
+catboost_model.fit(train_pool)#,plot=True)
+
+# CatBoost accuracy
+acc_catboost = round(catboost_model.score(x_train, y_train) * 100, 2)
+
+
+# How long will this take?
+start_time = time.time()
+
+# Set params for cross-validation as same as initial model
+cv_params = catboost_model.get_params()
+
+# Run the cross-validation for 10-folds (same as the other models)
+cv_data = cv(train_pool,
+             cv_params,
+             fold_count=10)#,plot=True)
+
+# How long did it take?
+catboost_time = (time.time() - start_time)
+
+# CatBoost CV results save into a dataframe (cv_data), let's withdraw the maximum accuracy score
+acc_cv_catboost = round(np.max(cv_data['test-Accuracy-mean']) * 100, 2)
+
 
 
 """
