@@ -38,7 +38,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
 import matplotlib.pyplot as plt
 from sklearn.linear_model import Lasso
-#import catboost
+import catboost
 from sklearn.model_selection import train_test_split
 from sklearn import model_selection, tree, preprocessing, metrics, linear_model
 from sklearn.svm import LinearSVC
@@ -47,7 +47,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LinearRegression, LogisticRegression, SGDClassifier
 from sklearn.tree import DecisionTreeClassifier
-#from catboost import CatBoostClassifier, Pool, cv
+from catboost import CatBoostClassifier, Pool, cv
 
 
 #print(os.listdir())
@@ -62,45 +62,22 @@ lable = raw_data.iloc[:, 1]
 List of important feature
 """
 
-list_of_important_feature = ['blueWardsDestroyed','blueKills', 'blueDeaths', 'blueAssists', 'blueEliteMonsters',
-                             'blueDragons','blueTowersDestroyed','blueAvgLevel', 'blueTotalMinionsKilled', 'redDeaths']
-df_2 = pd.DataFrame()
-for titel in list_of_important_feature:
-    df_2[titel] = raw_data[titel]
-
-
-list_of_important_feature01 = ['blueTotalExperience','blueGoldDiff', 'redTotalGold', 'redGoldDiff', 'redExperienceDiff']
-df_3 = pd.DataFrame()
-for titel in list_of_important_feature01:
-    df_3[titel] = raw_data[titel]
+# list_of_important_feature = ['blueWardsDestroyed','blueKills', 'blueDeaths', 'blueAssists', 'blueEliteMonsters',
+#                              'blueDragons','blueTowersDestroyed','blueAvgLevel', 'blueTotalMinionsKilled', 'redDeaths']
+# df_2 = pd.DataFrame()
+# for titel in list_of_important_feature:
+#     df_2[titel] = raw_data[titel]
+#
+#
+# list_of_important_feature01 = ['blueTotalExperience','blueGoldDiff', 'redTotalGold', 'redGoldDiff', 'redExperienceDiff']
+# df_3 = pd.DataFrame()
+# for titel in list_of_important_feature01:
+#     df_3[titel] = raw_data[titel]
 """
 Data split
 """
-x_train, x_test, y_train, y_test = train_test_split(df_3, lable, test_size=0.2, shuffle=True, random_state=12)
+x_train, x_test, y_train, y_test = train_test_split(df, lable, test_size=0.2, shuffle=True, random_state=12)
 x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, test_size=0.1, shuffle=True, random_state=12)
-
-# clf = LogisticRegression(random_state=0).fit(x_train, y_train)
-# clf.predict()
-clf = MLPClassifier()
-
-# model = Lasso()
-#
-# model.fit(x_train, y_train)
-#
-# c = model.coef_
-# print(c)
-# plt.plot(range(len(x_train.columns)), c)
-# plt.xticks(range(len(x_train.columns)), x_train.columns)
-# plt.ylabel('coefficients')
-# plt.show()
-
-# clf.fit(x_train, y_train)
-# y_pred = clf.predict(x_test)
-#
-# acc = np.mean(y_test == y_pred)
-#
-# print("accuracy = %.2f" % acc)
-
 
 
 def fit_ml_algo(algo, X_train, y_train, cv):
