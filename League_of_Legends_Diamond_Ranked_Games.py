@@ -48,6 +48,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LinearRegression, LogisticRegression, SGDClassifier
 from sklearn.tree import DecisionTreeClassifier
 from catboost import CatBoostClassifier, Pool, cv
+from sklearn.naive_bayes import GaussianNB, MultinomialNB, BernoulliNB
 
 
 #print(os.listdir())
@@ -76,7 +77,7 @@ for titel in list_of_important_feature01:
 """
 Data split
 """
-x_train, x_test, y_train, y_test = train_test_split(df, lable, test_size=0.2, shuffle=True, random_state=12)
+x_train, x_test, y_train, y_test = train_test_split(df_3, lable, test_size=0.2, shuffle=True, random_state=12)
 x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, test_size=0.1, shuffle=True, random_state=12)
 
 
@@ -101,10 +102,10 @@ def fit_ml_algo(algo, X_train, y_train, cv):
 
 # Logistic Regression
 start_time = time.time()
-train_pred_log, acc_log, acc_cv_log = fit_ml_algo(LogisticRegression(),
+train_pred_log, acc_log, acc_cv_log = fit_ml_algo(LogisticRegression(solver='lbfgs'),
                                                                x_train,
                                                                y_train,
-                                                                    10)
+                                                                  10)
 log_time = (time.time() - start_time)
 print("Logistic Regression Accuracy: %s" % acc_log)
 print("Accuracy CV 10-Fold: %s" % acc_cv_log)
@@ -117,7 +118,7 @@ start_time = time.time()
 train_pred_knn, acc_knn, acc_cv_knn = fit_ml_algo(KNeighborsClassifier(n_neighbors=3),
                                                   x_train,
                                                   y_train,
-                                                 10)
+                                                       10)
 knn_time = (time.time() - start_time)
 print("KNN Accuracy: %s" % acc_knn)
 print("Accuracy CV 10-Fold: %s" % acc_cv_knn)
@@ -130,37 +131,116 @@ train_pred_lsvc, acc_linear_svc, acc_cv_linear_svc = fit_ml_algo(LinearSVC(),
                                                                 x_train,
                                                                 y_train,
                                                                 10)
-linear_svc_time = (time.time() - start_time)
+lsvc_time = (time.time() - start_time)
 print("Linear SVC Accuracy: %s" % acc_linear_svc)
 print("Accuracy CV 10-Fold: %s" % acc_cv_linear_svc)
-print("Running Time: %s" % datetime.timedelta(seconds=linear_svc_time))
+print("Running Time: %s" % datetime.timedelta(seconds=lsvc_time))
 print()
 
 
 # SVC
 start_time = time.time()
-train_pred_svc, acc_linear_svc, acc_cv_linear_svc = fit_ml_algo(SVC(gamma='scale'),
+train_pred_svc, acc_svc, acc_cv_svc = fit_ml_algo(SVC(gamma='scale'),
                                                                 x_train,
                                                                 y_train,
                                                                 10)
-linear_svc_time = (time.time() - start_time)
-print("SVC Accuracy: %s" % acc_linear_svc)
-print("Accuracy CV 10-Fold: %s" % acc_cv_linear_svc)
-print("Running Time: %s" % datetime.timedelta(seconds=linear_svc_time))
+svc_time = (time.time() - start_time)
+print("SVC Accuracy: %s" % acc_cv_svc)
+print("Accuracy CV 10-Fold: %s" % acc_cv_svc)
+print("Running Time: %s" % datetime.timedelta(seconds=svc_time))
 print()
 
 
 
 # NuSVC
 start_time = time.time()
-train_pred_Nusvc, acc_linear_svc, acc_cv_linear_svc = fit_ml_algo(NuSVC(gamma='scale'),
+train_pred_Nusvc, acc_Nu_svc, acc_cv_Nu_svc = fit_ml_algo(NuSVC(gamma='scale'),
                                                                 x_train,
                                                                 y_train,
                                                                 10)
-linear_svc_time = (time.time() - start_time)
-print("NUSVC Accuracy: %s" % acc_linear_svc)
-print("Accuracy CV 10-Fold: %s" % acc_cv_linear_svc)
-print("Running Time: %s" % datetime.timedelta(seconds=linear_svc_time))
+Nusvc = (time.time() - start_time)
+print("NUSVC Accuracy: %s" % acc_Nu_svc)
+print("Accuracy CV 10-Fold: %s" % acc_cv_Nu_svc)
+print("Running Time: %s" % datetime.timedelta(seconds=Nusvc))
+print()
+
+
+# GaussianN
+start_time = time.time()
+train_pred_GaussianNB, acc_GaussianNB, acc_cv_GaussianNB = fit_ml_algo(GaussianNB(),
+                                                                x_train,
+                                                                y_train,
+                                                                10)
+GaussianNB = (time.time() - start_time)
+print("GaussianN Accuracy: %s" % acc_GaussianNB)
+print("Accuracy CV 10-Fold: %s" % acc_cv_GaussianNB)
+print("Running Time: %s" % datetime.timedelta(seconds=GaussianNB))
+print()
+
+
+# SGDClassifier
+start_time = time.time()
+train_pred_SGDClassifier, acc_SGDClassifier, acc_cv_SGDClassifier = fit_ml_algo(SGDClassifier(),
+                                                                x_train,
+                                                                y_train,
+                                                                10)
+SGDClassifier = (time.time() - start_time)
+print("SGDClassifier Accuracy: %s" % acc_SGDClassifier)
+print("Accuracy CV 10-Fold: %s" % acc_cv_SGDClassifier)
+print("Running Time: %s" % datetime.timedelta(seconds=SGDClassifier))
+print()
+
+
+
+# # MultinomialNB
+# start_time = time.time()
+# train_pred_MultinomialNB, acc_MultinomialNB, acc_cv_MultinomialNB = fit_ml_algo(MultinomialNB(),
+#                                                                 x_train,
+#                                                                 y_train,
+#                                                                 10)
+# MultinomialNB = (time.time() - start_time)
+# print("GaussianN Accuracy: %s" % acc_MultinomialNB)
+# print("Accuracy CV 10-Fold: %s" % acc_cv_MultinomialNB)
+# print("Running Time: %s" % datetime.timedelta(seconds=MultinomialNB))
+# print()
+
+
+# BernoulliNB
+start_time = time.time()
+train_pred_BernoulliNB, acc_BernoulliNB, acc_cv_BernoulliNB = fit_ml_algo(BernoulliNB(alpha=2),
+                                                                x_train,
+                                                                y_train,
+                                                                10)
+BernoulliNB = (time.time() - start_time)
+print("BernoulliNB Accuracy: %s" % acc_BernoulliNB)
+print("Accuracy CV 10-Fold: %s" % acc_cv_BernoulliNB)
+print("Running Time: %s" % datetime.timedelta(seconds=BernoulliNB))
+print()
+
+
+# Decision Tree Classifier
+start_time = time.time()
+train_pred_dt, acc_dt, acc_cv_dt = fit_ml_algo(DecisionTreeClassifier(),
+                                                                x_train,
+                                                                y_train,
+                                                                10)
+dt_time = (time.time() - start_time)
+print("Accuracy: %s" % acc_dt)
+print("Accuracy CV 10-Fold: %s" % acc_cv_dt)
+print("Running Time: %s" % datetime.timedelta(seconds=dt_time))
+print()
+
+
+# Gradient Boosting Trees
+start_time = time.time()
+train_pred_gbt, acc_gbt, acc_cv_gbt = fit_ml_algo(GradientBoostingClassifier(),
+                                                                       x_train,
+                                                                       y_train,
+                                                                       10)
+gbt_time = (time.time() - start_time)
+print("Accuracy: %s" % acc_gbt)
+print("Accuracy CV 10-Fold: %s" % acc_cv_gbt)
+print("Running Time: %s" % datetime.timedelta(seconds=gbt_time))
 print()
 
 
@@ -233,6 +313,6 @@ valid_sample_num = torch.tensor(x_valid.shape[0])
 
 
 
-print(all_acc_and_algo_name)
+print(all_acc_and_algo_name.keys())
 
 print('END!')
